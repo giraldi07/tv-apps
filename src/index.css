@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .custom-scrollbar::-webkit-scrollbar {
-  display: none; /* Untuk Chrome/Safari */
+  width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
