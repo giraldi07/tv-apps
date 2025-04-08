@@ -2,8 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+.custom-scrollbar {
+  -webkit-overflow-scrolling: touch; /* Untuk smooth scrolling di iOS */
+  scrollbar-width: none; /* Untuk Firefox */
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
+  display: none; /* Sembunyikan scrollbar default di WebKit */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -20,3 +26,10 @@
   background: #4a4a4a;
 }
 
+/* Untuk browser yang mendukung scrollbar styling */
+@supports (scrollbar-width: thin) {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #404040 #232323;
+  }
+}
