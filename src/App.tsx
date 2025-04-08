@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Tv2, Menu, X, Settings, Info, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { Channel } from './types';
 import ImageBackground from './assets/3840x2160-evening-light-thorsmork-mountains-4k_1540133474.jpg';
 import VideoPlayer from './components/VideoPlayer';
 import { Link } from 'react-router-dom';
-
 
 function App() {
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -14,8 +13,10 @@ function App() {
   const [showChannelList, setShowChannelList] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showControls, setShowControls] = useState(true);
-  const [touchStartY, setTouchStartY] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const channelListRef = useRef<HTMLDivElement>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const filteredChannels = channels.filter(channel =>
     channel.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -61,17 +62,6 @@ function App() {
     }
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartY(e.touches[0].clientY);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    const touchDelta = touchStartY - e.touches[0].clientY;
-    if (Math.abs(touchDelta) > 50) {
-      setShowChannelList(touchDelta < 0);
-    }
-  };
-
   const handleMouseMove = () => {
     setShowControls(true);
   };
@@ -85,6 +75,32 @@ function App() {
       : (currentIndex - 1 + channels.length) % channels.length;
     
     setSelectedChannel(channels[newIndex]);
+  };
+
+  const handleChannelListTouchStart = (e: React.TouchEvent) => {
+    setTouchStartY(e.touches[0].clientY);
+    setIsScrolling(false);
+  };
+
+  const handleChannelListTouchMove = (e: React.TouchEvent) => {
+    if (touchStartY === null) return;
+    
+    const touchCurrentY = e.touches[0].clientY;
+    const touchDelta = touchStartY - touchCurrentY;
+    
+    // Jika pergerakan vertikal lebih dari 10px, anggap sebagai scroll
+    if (Math.abs(touchDelta) > 10) {
+      setIsScrolling(true);
+    }
+  };
+
+  const handleChannelListTouchEnd = () => {
+    if (!isScrolling && touchStartY !== null) {
+      // Hanya tutup channel list jika bukan scroll dan touch delta cukup besar
+      setShowChannelList(false);
+    }
+    setTouchStartY(null);
+    setIsScrolling(false);
   };
 
   if (loading) {
@@ -114,15 +130,12 @@ function App() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundColor: '#141414' // fallback color
+        backgroundColor: '#141414'
       }}
       onKeyDown={handleKeyDown}
       onMouseMove={handleMouseMove}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
       tabIndex={0}
     >
-
       {/* Top Bar */}
       <div 
         className={`absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-20 bg-gradient-to-b from-black via-black/50 to-transparent transition-opacity duration-300 ${
@@ -178,8 +191,12 @@ function App() {
           onClick={() => setShowChannelList(false)}
         >
           <div 
+            ref={channelListRef}
             className="absolute right-0 top-0 bottom-0 w-full md:w-[400px] bg-[#181818] p-6"
             onClick={e => e.stopPropagation()}
+            onTouchStart={handleChannelListTouchStart}
+            onTouchMove={handleChannelListTouchMove}
+            onTouchEnd={handleChannelListTouchEnd}
           >
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-6">
