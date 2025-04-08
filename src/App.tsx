@@ -34,6 +34,7 @@ function App() {
         setLoading(false);
       })
       .catch(err => {
+        console.log(err)
         setError('Failed to load channels');
         setLoading(false);
       });
@@ -258,9 +259,15 @@ function App() {
             <h2 className="text-3xl font-bold mb-4">
               Welcome to Smart Indo TV
             </h2>
+
             <p className="text-gray-400 text-lg max-w-md">
               Discover and watch your favorite Indonesian TV channels with a modern streaming experience.
             </p>
+
+            <span className="text-gray-400 text-md max-w-md m-4">
+              By Giraldi Prama Yudistira
+            </span>
+
             <button
               onClick={() => setShowChannelList(true)}
               className="mt-8 bg-red-600 hover:bg-red-700 px-8 py-3 rounded-md text-lg font-medium transition-colors"
