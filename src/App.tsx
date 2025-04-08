@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Tv2, Menu, X, Settings, Info, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { Channel } from './types';
+import ImageBackground from './assets/3840x2160-evening-light-thorsmork-mountains-4k_1540133474.jpg';
 import VideoPlayer from './components/VideoPlayer';
+import { Link } from 'react-router-dom';
+
 
 function App() {
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -105,25 +108,34 @@ function App() {
 
   return (
     <div 
-      className="min-h-screen bg-[#141414] text-white relative overflow-hidden"
+      className="min-h-screen text-white relative overflow-hidden"
+      style={{
+        backgroundImage: `url(${ImageBackground})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#141414' // fallback color
+      }}
       onKeyDown={handleKeyDown}
       onMouseMove={handleMouseMove}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       tabIndex={0}
     >
+
       {/* Top Bar */}
       <div 
         className={`absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-20 bg-gradient-to-b from-black via-black/50 to-transparent transition-opacity duration-300 ${
           showControls || !selectedChannel ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
-        <div className="flex items-center space-x-4">
+        <a href="/" className="flex items-center space-x-4 cursor-pointer">
           <Tv2 className="h-8 w-8 text-red-600" />
           <h1 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">
             Smart Indo TV
           </h1>
-        </div>
+        </a>
+
         <div className="flex items-center space-x-4">
           <span className="hidden md:inline text-xl">
             {currentTime.toLocaleTimeString('en-US', { 
