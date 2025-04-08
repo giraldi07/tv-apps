@@ -5,6 +5,7 @@ import ImageBackground from './assets/3840x2160-evening-light-thorsmork-mountain
 import VideoPlayer from './components/VideoPlayer';
 import { Link } from 'react-router-dom';
 
+
 function App() {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -13,9 +14,8 @@ function App() {
   const [showChannelList, setShowChannelList] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showControls, setShowControls] = useState(true);
+  const [touchStartY, setTouchStartY] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [touchStartY, setTouchStartY] = useState<number | null>(null);
 
   const filteredChannels = channels.filter(channel =>
     channel.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -61,30 +61,15 @@ function App() {
     }
   };
 
-  const handleChannelListTouchStart = (e: React.TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartY(e.touches[0].clientY);
-    setIsScrolling(false);
   };
 
-  const handleChannelListTouchMove = (e: React.TouchEvent) => {
-    if (touchStartY === null) return;
-    
-    const touchCurrentY = e.touches[0].clientY;
-    const touchDelta = touchStartY - touchCurrentY;
-    
-    // Jika pergerakan vertikal lebih dari 10px, anggap sebagai scroll
-    if (Math.abs(touchDelta) > 10) {
-      setIsScrolling(true);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const touchDelta = touchStartY - e.touches[0].clientY;
+    if (Math.abs(touchDelta) > 50) {
+      setShowChannelList(touchDelta < 0);
     }
-  };
-
-  const handleChannelListTouchEnd = () => {
-    if (!isScrolling && touchStartY !== null) {
-      // Hanya tutup channel list jika bukan scroll dan touch delta cukup besar
-      setShowChannelList(false);
-    }
-    setTouchStartY(null);
-    setIsScrolling(false);
   };
 
   const handleMouseMove = () => {
@@ -133,8 +118,11 @@ function App() {
       }}
       onKeyDown={handleKeyDown}
       onMouseMove={handleMouseMove}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       tabIndex={0}
     >
+
       {/* Top Bar */}
       <div 
         className={`absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-20 bg-gradient-to-b from-black via-black/50 to-transparent transition-opacity duration-300 ${
@@ -187,14 +175,11 @@ function App() {
       {showChannelList && (
         <div 
           className="fixed inset-0 bg-black/90 z-30 backdrop-blur-sm"
-          onClick={() => !isScrolling && setShowChannelList(false)}
+          onClick={() => setShowChannelList(false)}
         >
           <div 
             className="absolute right-0 top-0 bottom-0 w-full md:w-[400px] bg-[#181818] p-6"
             onClick={e => e.stopPropagation()}
-            onTouchStart={handleChannelListTouchStart}
-            onTouchMove={handleChannelListTouchMove}
-            onTouchEnd={handleChannelListTouchEnd}
           >
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-6">
