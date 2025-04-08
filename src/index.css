@@ -20,7 +20,3 @@
   background: #4a4a4a;
 }
 
-.custom-scrollbar {
-  -webkit-overflow-scrolling: touch; /* Untuk scrolling smooth di iOS */
-  scrollbar-width: none; /* Untuk Firefox */
-}
