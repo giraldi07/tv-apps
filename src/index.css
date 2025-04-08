@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  display: none; /* Untuk Chrome/Safari */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -18,4 +18,9 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #4a4a4a;
+}
+
+.custom-scrollbar {
+  -webkit-overflow-scrolling: touch; /* Untuk scrolling smooth di iOS */
+  scrollbar-width: none; /* Untuk Firefox */
 }
